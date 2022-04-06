@@ -20,17 +20,25 @@
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
     "lint": "eslint . --ext ts --ext tsx --ext js --ext jsx",
     "lint:fix": "eslint . --ext ts --ext tsx --ext js --ext jsx --fix",
-    "lint:check": "eslint . --ext ts --ext tsx --ext js --ext jsx --quiet"
+    "lint:quiet": "eslint . --ext ts --ext tsx --ext js --ext jsx --quiet",
+    "check": "npm run typecheck & npm run lint"
   },
   "dependencies": {
+    "babel-plugin-styled-components": "^2.0.6",
     "gatsby": "^4.10.3",
+    "gatsby-plugin-react-helmet": "^5.11.0",
+    "gatsby-plugin-styled-components": "^5.11.0",
     "react": "^17.0.1",
-    "react-dom": "^17.0.1"
+    "react-dom": "^17.0.1",
+    "react-helmet": "^6.1.0",
+    "styled-components": "^5.3.5"
   },
   "devDependencies": {
     "@types/node": "^17.0.23",
     "@types/react": "^17.0.42",
     "@types/react-dom": "^17.0.14",
+    "@types/react-helmet": "^6.1.5",
+    "@types/styled-components": "^5.1.24",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-config-react-app": "^6.0.0",

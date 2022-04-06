@@ -2,18 +2,15 @@
   <a href="https://www.gatsbyjs.com/">
     <img alt="Gatsby" src="https://www.gatsbyjs.com/Gatsby-Monogram.svg" width="32" />
   </a>
-  <a href="https://www.typescriptlang.org/">
-    <img alt="TypeScript" src="https://www.typescriptlang.org/favicon-32x32.png" width="32" />
+  <a href="https://styled-components.com/">
+    <img alt="TypeScript" src="https://styled-components.com/logo.png" width="32" />
   </a>
-  <a href="https://prettier.io/">
-    <img alt="Prettier" src="https://prettier.io/icon.png" width="32" />
-  </a>
-  <a href="https://eslint.org/">
-    <img alt="ESLint" src="https://eslint.org/assets/img/favicon.512x512.png" width="32" />
+  <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties">
+    <img alt="Prettier" src="https://i.postimg.cc/t4m2sqDT/css-logo.png" height="32" />
   </a>
 </p>
 <h1 align="center">
-  Gatsby and Essential Tools
+  Gatsby and Essential Styling
 </h1>
 <p align="center">
   Brief notes that contain only essential instructions with reference to official resources
@@ -21,325 +18,336 @@
 
 ## 📋 Overview
 
-Gatsby natively supports both JavaScript and TypeScript.
-Also, Gatsby supports the use of ESLint and Prettier to enforce code styling standards.
+There are some options for styling in Gatsby: Inline styles, Global CSS, CSS Modules, Styled-Components, Bootstrap, etc.
+At first glance, styling of SSR app should not be so complicated since there are so many options.
+However, there are cases when a simple feature can have a complex implementation, e.x. freaking dark mode.
+So the choice of styling approach could become complicated.
+Personally, I would rather like CSS-in-JS approach and Styled-Components.
+But it doesn't mean that using CSS-in-JS absolves you from needing to learn CSS.
+No matter where you put your CSS, it behooves you to develop a mastery of the language.
+There are a lot of the exciting newer developments in CSS. One of them is CSS variables _(aka Custom Properties)_.
+Using them can help resolve a lot of issues.
 
-Before you start, all you need is
+Let's summarize, in this starter we are focusing on the initial app structure for styling.
+The fundamental strategy can also be used with any SSR app.
 
-- Have a [basic understanding](https://www.gatsbyjs.com/docs/tutorial/part-0/#background-knowledge) of the key technologies needed to create a Gatsby site.
-- Install all the required software tools: Node.js (v14.15 or newer), Git, preferable IDE.
-- Create all the necessary accounts for deploying your site online: [GitHab](https://github.com/) and [Gatsby cloud](https://www.gatsbyjs.com/dashboard/signup/) accounts.
+**Prerequisites**
 
-## 🚀 Get Up and Running
+- A [Gatsby site](https://github.com/LisKorzun/Gatsby___Essential-Tools) with an index page component
 
-1. **Install Gatsby command line interface (CLI)**
+## 🚀 Install Styled-Components
+
+1. **Install [Gatsby plugin](https://www.gatsbyjs.com/plugins/gatsby-plugin-styled-components/) and the necessary dependencies**
 
    ```shell
-   # install Gatsby CLI globally
+   npm install gatsby-plugin-styled-components styled-components babel-plugin-styled-components
+
+   # Do not forget to add @types/styled-components
+
+   npm install @types/styled-components -D
+   ```
+
+2. **Add plugin to `gatsby-config.ts`**
+
+   ```js
+   // gatsby-config.ts
+
+   module.exports = {
+     plugins: [`gatsby-plugin-styled-components`],
+   }
+   ```
+
+🔥 At this point, you can run `gatsby develop` and use styled-components.
+
+## 🚩 Set up ThemeProvider and GlobalStyles
+
+1. **Create `GlobalStyle.ts` in `src/styles` folder**
+
+   ```js
+   // Copy the snippet below to the newly created GlobalStyle.js file
+
+   import { createGlobalStyle } from 'styled-components'
+
+   const GlobalStyles = createGlobalStyle`
    
-   npm install gatsby-cli -g
+   // Here we are going to add global styles
+   
+   `
+
+   export default GlobalStyles
    ```
 
-2. **Create a Gatsby site**
+> Inside its **[configuration files](https://www.gatsbyjs.com/docs/reference/config-files/)**, Gatsby provides a rich set of lifecycle APIs to hook into its bootstrap, build, and client runtime operations.
 
-   Use the Gatsby CLI to create a new site, specifying the minimal starter.
+> **[Gatsby Browser APIs](https://www.gatsbyjs.com/docs/reference/config-files/gatsby-browser/):** The file `gatsby-browser.ts` lets you respond to Gatsby-specific events within the browser, and wrap your page components in additional global components.
+> The Gatsby Browser API gives you many options for interacting with the client-side of Gatsby.
 
-   ```shell
-   # create a new Gatsby site using the minimal starter
-   gatsby new
-   # OR
-   npm init gatsby
+> The **[wrapRootElement](https://www.gatsbyjs.com/docs/reference/config-files/gatsby-browser/#wrapRootElement)**
+> api is designed for wrapping your core application with all of your various providers. **wrapRootElement** does not render every time the page changes,
+> it’s a good fit for context providers that don’t need the page, like theme or global application state providers.
+
+2. **Create `wrapRoot.tsx` in `src/components` folder. Add ThemeProvider and GlobalStyles**
+
+   ```tsx
+   // Copy the snippet below to the newly created wrapRoot.tsx file
+
+   import React from 'react'
+   import type { GatsbyBrowser } from 'gatsby'
+   import { ThemeProvider } from 'styled-components'
+
+   import { GlobalStyle } from '../styles'
+
+   const wrapRoot: GatsbyBrowser['wrapRootElement'] = ({ element }) => {
+     /* it will be called only once in browser, when React mounts */
+
+     return (
+       <ThemeProvider theme={{}}>
+         <GlobalStyle />
+         {element}
+       </ThemeProvider>
+     )
+   }
+
+   export default wrapRoot
    ```
 
-3. **Start developing**
+3. **Create `gatsby-browser.ts` in the root. Use wrapRootElement gatsby api**
 
-   Navigate into your new site’s directory and start it up.
+   ```ts
+   // Copy the snippet below to the newly created gatsby-browser.ts file
 
-   ```shell
-   cd my-gatsby-site/
+   import wrapRoot from './src/components/wrapRoot'
 
-   gatsby develop
-   # OR
-   npm run develop
+   export const wrapRootElement = wrapRoot
    ```
 
-4. **Open the code and start customizing**
+🔥 At this point, you can run `gatsby develop`, add some styles to `GlobalStyle.ts` and check how they are applied.
 
-   Your site is now running at http://localhost:8000!
+> The **[wrapPageElement](https://www.gatsbyjs.com/docs/reference/config-files/gatsby-browser/#wrapPageElement)**
+> api is ideal for base layouts that every page has. It's not necessary to use this function,
+> but if you don't want to have to add your base layout component to every page of your site, then using this api is a good way to save some typing.
+> **wrapPageElement** renders every time the page changes, making it ideal for complex page transitions, or for stuff that need the page path.
+> It’s better to use it only for providers that need the router props.
 
-   Edit `src/pages/index.js` to see your site update in real-time!
+> One similarity `wrapPageElement` and `wrapRootElement` share is that they both mount only once,
+> as opposed to a regular Layout component—that you use inside your pages—that will unmount every time the page changes.
 
-🔥 At this point, you’ve got a fully functional Gatsby website.
+4. **Create `Layout.tsx` in `src/components` folder**
 
-## 🚩 TypeScript
+   ```tsx
+   // Copy the snippet below to the newly created Layout.tsx file
 
-1. **Install [Typescript](https://www.typescriptlang.org/) as `devDependencies`**
+   import React, { FC } from 'react'
 
-   ```shell
-   npm install typescript @types/node @types/react @types/react-dom -D
+   const Layout: FC = ({ children, ...propsUsedByPage }) => {
+     console.log(propsUsedByPage)
+     // Layout receives same data as Page element will get
+     // including location, path, uri, params, data, pageContext, etc
+
+     return (
+       <>
+         <header>Site Name</header>
+         <main>{children}</main>
+         <footer>Footer</footer>
+       </>
+     )
+   }
+
+   export default Layout
    ```
 
-2. **Add [configuration file](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html#handbook-content)**
+5. **Create `wrapPage.tsx` in `src/components` folder**
 
-   ```shell
-   npx tsc --init
+   ```tsx
+   // Copy the snippet below to the newly created wrapPage.tsx file
+
+   import React from 'react'
+   import type { GatsbyBrowser } from 'gatsby'
+
+   import Layout from './Layout'
+
+   const wrapPage: GatsbyBrowser['wrapPageElement'] = ({ element, props }) => {
+     // props provide same data to Layout as Page element will get
+     // including location, data, etc - you don't need to pass it
+
+     return <Layout {...props}>{element}</Layout>
+   }
+
+   export default wrapPage
    ```
 
-   Update `tsconfig` specifying essential options:
+6. **Update `gatsby-browser.ts` by adding wrapPageElement**
 
-   ```json
-   {
-     "include": ["./src/**/*"],
-     "compilerOptions": {
-       "target": "esnext",
-       "lib": ["dom", "esnext"],
-       "jsx": "react",
-       "module": "esnext",
-       "moduleResolution": "node",
-       "esModuleInterop": true,
-       "forceConsistentCasingInFileNames": true,
-       "strict": true,
-       "skipLibCheck": true
+   ```ts
+   import wrapRoot from './src/components/wrapRoot'
+   import wrapPage from './src/components/wrapPage'
+
+   export const wrapRootElement = wrapRoot
+   export const wrapPageElement = wrapPage
+   ```
+
+🔥 At this point, you can run `gatsby develop`, modify the layout and check how it works.
+
+> **[Gatsby Server Rendering APIs](https://www.gatsbyjs.com/docs/reference/config-files/gatsby-ssr/):**
+> The file `gatsby-ssr.ts` lets you alter the content of static HTML files as they are being Server-Side Rendered (SSR) by Gatsby and Node.js.
+> To use the Gatsby SSR APIs, create a file called gatsby-ssr.js in the root of your site.
+
+> The APIs **wrapPageElement** and **wrapRootElement** exist **in both the SSR and browser APIs**.
+> You generally should implement the same components in both `gatsby-ssr.ts` and `gatsby-browser.ts`
+> **_so that pages generated through SSR with Node.js are the same after being hydrated in the browser_**.
+
+7. **Create `gatsby-ssr.ts` in the root**
+
+   ```ts
+   // Copy gatsby-browser.ts to the newly created gatsby-ssr.ts file
+
+   import wrapRoot from './src/components/wrapRoot'
+   import wrapPage from './src/components/wrapPage'
+
+   export const wrapRootElement = wrapRoot
+   export const wrapPageElement = wrapPage
+   ```
+
+## 🚩 Styles folder
+
+> Browsers apply styles to elements before you’ve written any CSS at all, and sometimes those styles vary. 
+> Normalizing your CSS lets you rest assured, knowing that you have the same base layer of styles applied across all browsers.
+
+1. **Create `normalize.ts` in `src/styles` folder, copy [normalize](https://raw.githubusercontent.com/necolas/normalize.css/master/normalize.css)**
+
+   ```ts
+   import { css } from 'styled-components'
+   
+   const normalize = css`
+   
+   /* copy normalize.css here */
+   
+   `
+   
+   export default wrapPage
+   ```
+
+2. **Create `variables.ts` in `src/styles` folder**
+
+   ```ts
+   import { css } from 'styled-components'
+   
+   const variables = css`
+    :root {
+      --font-sans: 'Tahoma', -apple-system, system-ui, sans-serif;
+      
+      --color-text: #1b263b;
+      --color-background: #fff;
+      --color-primary: #06bcf0;
+      --color-secondary: #9cacbf;
+   }
+   `
+   
+   export default variables
+   ```
+
+3. **Add `variables` and `normalize` styles to GlobalStyle**
+
+   ```ts
+   import variables from './variables'
+   import normalize from './normalize'
+   
+   const GlobalStyles = createGlobalStyle`
+     ${normalize};
+     ${variables};
+   
+     /* Put your global styles here or create base.ts file*/
+     body {
+       font-family: var(--font-sans);
+       color: var(--color-text);
+       background-color: var(--color-background);
+     }  
+   `
+   ```
+  
+4. **Create theme.ts file with empty object and provide this object to ThemeProvider**
+   
+🔥 At this point, you have essential structure of styles folder.
+
+## 🚩 Fonts
+
+> There are a lot of ways how to add fonts to your gatsby site: 
+> use [gatsby-plugin-web-font-loader](https://www.gatsbyjs.com/docs/how-to/styling/using-web-fonts/#gatsby-plugin-web-font-loader),
+> use [Web Font Loader with Typekit](https://www.gatsbyjs.com/docs/how-to/styling/using-web-fonts/#how-to-use-web-font-loader-with-typekit),
+> self-host [Google Fonts with Fontsource](https://www.gatsbyjs.com/docs/how-to/styling/using-web-fonts/#self-host-google-fonts-with-fontsource).
+> Here I'd like to mention how to add local fonts.
+
+
+1. **Download any [Google Font family](https://fonts.google.com/specimen/Comfortaa) to your project**
+
+   Let's download Comfortaa font family and store it in `src/assets/fonts/Comfortaa` folder.
+
+2. **Create `fonts.ts` in `styles` folder**
+
+   ```ts
+   import { css } from 'styled-components'
+   
+   import ComfortaaRegular from '../assets/fonts/Comfortaa/Comfortaa-Regular.ttf'
+   import ComfortaaBold from '../assets/fonts/Comfortaa/Comfortaa-Bold.ttf'
+   import ComfortaaSemiBold from '../assets/fonts/Comfortaa/Comfortaa-SemiBold.ttf'
+   import ComfortaaLight from '../assets/fonts/Comfortaa/Comfortaa-Light.ttf'
+   import ComfortaaMedium from '../assets/fonts/Comfortaa/Comfortaa-Medium.ttf'
+   
+   const fonts = css`
+     @font-face {
+       font-family: 'Comfortaa';
+       src: url(${ComfortaaRegular}) format('truetype');
+       font-weight: 400;
      }
-   }
-   ```
-
-3. **Convert `.js/.jsx` to `.ts/.tsx`**
-
-   Since Gatsby natively supports JavaScript and TypeScript, you can change files from `.js/.jsx` to `.ts/.tsx` at any point to start adding types and gaining the benefits of a type system.
-
-
-4. **Rename `gatsby-*` files**
-
-   - `gatsby-node.js` to `gatsby-node.ts`
-   - `gatsby-config.js` to `gatsby-config.ts`
-   - `gatsby-browser.js` to `gatsby-browser.tsx`
-   - `gatsby-ssr.js` to `gatsby-ssr.tsx`
-
-   [Use either pure CommonJS or pure ES6](https://www.gatsbyjs.com/docs/reference/release-notes/migrating-from-v1-to-v2/#convert-to-either-pure-commonjs-or-pure-es6) in `gatsby-*` files. Do not mix ES and CommonJS module syntax because it will cause failures.
-
-
-5. **Add `typecheck` script to your `package.json`**
-
-   ```
-   "typecheck": "tsc --noEmit"
-   ```
-
-🔥 At this point, you can run `typecheck` script and fix errors if any.
-
-## 🚩 Prettier
-
-1. **Install [Prettier](https://prettier.io/) as `devDependencies`**
-
-   ```shell
-   npm install prettier -D
-   ```
-
-2. **Add [Configuration file](https://prettier.io/docs/en/configuration.html)**
-
-   ```yaml
-   # .prettierrc or .prettierrc.yaml
-
-   trailingComma: 'es5'
-   printWidth: 120
-   tabWidth: 2
-   semi: false
-   singleQuote: true
-   ```
-
-3. **Add `.prettierignore` [file](https://prettier.io/docs/en/ignore.html)**
-
-   ```.gitignore
-   *.min.js
-   node_modules/
+     @font-face {
+       font-family: 'Comfortaa';
+       src: url(${ComfortaaLight}) format('truetype');
+       font-weight: 300;
+     }
+     @font-face {
+       font-family: 'Comfortaa';
+       src: url(${ComfortaaMedium}) format('truetype');
+       font-weight: 500;
+     }
+     @font-face {
+       font-family: 'Comfortaa';
+       src: url(${ComfortaaSemiBold}) format('truetype');
+       font-weight: 600;
+     }
+     @font-face {
+       font-family: 'Comfortaa';
+       src: url(${ComfortaaBold}) format('truetype');
+       font-weight: 700;
+     }
+   `
    
-   # cache-dirs
-   .cache
-   
-   # built sites
-   public
-   
-   # testing
-   coverage
-   
-   package-lock.json
+   export default fonts
    ```
 
-4. **Add `format` script to your `package.json`**
+3. **Create `types.ts` in `src` folder. Add type declaration for the font type**
 
-   ```
-   "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\""
-   ```
-
-🔥 At this point, you can run `format` script and see result.
-
-## 🚩 ESLint
-
-Gatsby ships with a built-in ESLint setup. For most users, built-in ESLint setup is all you need. 
-However, let's see how to customize it in order to include typescript and prettier plugins.
-
-The easiest way is to use [eslint-config-react-app](https://www.npmjs.com/package/eslint-config-react-app).
-This package includes the shareable ESLint configuration used by Create React App including typescript plugin.
-So we do need install `@typescript-eslint` additionally.
-
-1. **Install [eslint-config-react-app](https://github.com/facebook/create-react-app/tree/main/packages/eslint-config-react-app)**
-
-   ```shell
-   # First install the necessary ESLint dependencies
-   
-   npm install eslint-config-react-app eslint -D
+   ```ts
+   declare module '*.ttf'
    ```
 
-2. **Create a config file for ESLint**
+4. **Import and add `fonts` to GlobalStyle**
 
-   ```shell
-   touch .eslintrc.js
-   ```
-   [touch-cli](https://www.npmjs.com/package/touch-cli) is a simple, limited implementation of the touch command for Node.
-
-
-3. **Configure ESLint**
-
-   ```js
-   // Copy the snippet below to the newly created .eslintrc.js file
-   
-   module.exports = {
-      globals: {
-         __PATH_PREFIX__: true,
-      },
-      extends: ['react-app'],
-   }
-   ```
-
-4. **Add `lint` script to your `package.json`**
+5. **Update font variable to use newly added font**
 
    ```
-   "lint": "eslint --ignore-path .gitignore . --ext ts --ext tsx --ext js --ext jsx"
+   --font-sans: 'Comfortaa', 'Tahoma', -apple-system, system-ui, sans-serif;
    ```
 
-🔥 At this point, you can run `lint` script and see result.
+🔥 If you faced with Web Font flickering on load, you can try to preload the font with helmet plugin.
 
-5. **Add [eslint-plugin-prettier](https://www.npmjs.com/package/eslint-plugin-prettier)**
-   (Plugin runs Prettier as an ESLint rule and reports differences as individual ESLint issues.)
-
-   ```shell
-   # Install eslint-plugin-prettier
-   
-   npm install eslint-plugin-prettier -D
-   ```
-
-   ```shell
-   # Install recommended configuration
-   
-   npm install eslint-config-prettier -D
-   ```
-
-   ```js
-   // Add plugin:prettier/recommended as the last extension in your .eslintrc.json
-   
-   module.exports = {
-      globals: {
-         __PATH_PREFIX__: true,
-      },
-      extends: ['react-app', 'plugin:prettier/recommended'],
-   }
-   ```
-   
-🔥 At this point, you can run `lint` script again and check `prettier/prettier` errors.
-
-6. **Add `.eslintignore` [file](https://eslint.org/docs/user-guide/configuring/ignoring-code)**
-
-   If you'd prefer to use a different file than the `.eslintignore` in the current working directory, 
-you can specify it on the command line using the `--ignore-path` option. 
-For example, you can also use your `.gitignore` file, as we did before.
-Keep in mind that specifying `--ignore-path` means that any existing `.eslintignore` file will not be used.
-
-   Create `.eslintignore` file
-   ```shell
-   touch .eslintignore
-   ```
-
-   Add paths which should be omitted from linting
-   ```.gitignore
-   *.min.js
-   node_modules/
-   
-   # cache-dirs
-   .cache
-   
-   # built sites
-   public
-   
-   # testing
-   coverage
-   ```
-
-   Update lint script by removing --ignore-path option
-   ```
-   "lint": "eslint . --ext ts --ext tsx --ext js --ext jsx"
-   ```
-
-7. **Add useful scripts**
-
-   [Fixing problem](https://eslint.org/docs/user-guide/command-line-interface#fixing-problems):
-   Automatically fix problems
-   ```
-   "lint:fix": "eslint . --ext ts --ext tsx --ext js --ext jsx --fix"
-   ```
-
-   [Handling warnings](https://eslint.org/docs/user-guide/command-line-interface#handling-warnings):
-   Report errors only
-   ```
-   "lint:check": "eslint . --ext ts --ext tsx --ext js --ext jsx --quiet"
-   ```
-🔥 At this point, you get configured ESLint with helpful scripts. 
-Another way to do this is to use the Community plugin [gatsby-plugin-eslint](https://www.gatsbyjs.com/plugins/gatsby-plugin-eslint/).
-
-## 🚩 Gitignore
-
-1. **Add essential most popular paths which should be omitted from git**
-
-   ```.gitignore
-   # dependencies
-   node_modules/
-   
-   # cache-dirs
-   .cache
-   
-   # production
-   public
-   
-   # testing
-   coverage
-   
-   # IDE specific
-   .idea/
-   .vscode/
-   
-   # ignore log files
-   npm-debug.log*
-   ```
-
-## 🚀 Quick start (Gatsby Cloud)
-
-Deploy this starter with one click on [Gatsby Cloud](https://www.gatsbyjs.com/cloud/):
-
-[<img src="https://www.gatsbyjs.com/deploynow.svg" alt="Deploy to Gatsby Cloud">](https://www.gatsbyjs.com/dashboard/deploynow?url=https://github.com/gatsbyjs/gatsby-starter-minimal)
 
 ---
 
 Learn more about
 
-- [Development Environment](https://www.gatsbyjs.com/docs/tutorial/part-0/)
-- [How Gatsby Works](https://www.gatsbyjs.com/docs/tutorial/)
-
-
-- [Javascript tooling](https://www.gatsbyjs.com/docs/how-to/local-development/javascript-tooling/)
-- [TypeScript and Gatsby](https://www.gatsbyjs.com/docs/how-to/custom-configuration/typescript/)
-- [Using ESLint](https://www.gatsbyjs.com/docs/how-to/custom-configuration/eslint/)
-- [Gatsby Cheat Sheet](https://www.gatsbyjs.com/docs/cheat-sheet/)
-
-
-- [Gatsby Docs](https://www.gatsbyjs.com/docs/)
-- [Gatsby Starters](https://www.gatsbyjs.com/starters/)
-- [Gatsby Plugins](https://www.gatsbyjs.com/plugins)
+- [Built-in CSS Support](https://www.gatsbyjs.com/docs/how-to/styling/built-in-css/)
+- [Recipes: Styling with CSS](https://www.gatsbyjs.com/docs/recipes/styling-css/)
+- [Tutorial: Styled Components](https://www.gatsbyjs.com/docs/how-to/styling/styled-components/)
+- [Official Plugin: gatsby-plugin-styled-components](https://www.gatsbyjs.com/plugins/gatsby-plugin-styled-components/)
+- [NPM: gatsby-plugin-styled-components](https://www.npmjs.com/package/gatsby-plugin-styled-components)
+-
