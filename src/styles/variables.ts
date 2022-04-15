@@ -2,7 +2,7 @@ import { css } from 'styled-components'
 
 const variables = css`
   :root {
-    --font-sans: 'Comfortaa', 'Tahoma', -apple-system, system-ui, sans-serif;
+    --font-sans: 'Comfortaa', 'Verdana', 'Tahoma', -apple-system, system-ui, sans-serif;
 
     --color-text: #1b263b;
     --color-background: #fff;
