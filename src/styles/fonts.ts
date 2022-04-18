@@ -37,8 +37,8 @@ const fonts = css`
   }
   @font-face {
     font-family: 'Comfortaa';
-    //src: url('/fonts/Comfortaa/Comfortaa-Bold.ttf') format('truetype');
-    src: url(${ComfortaaBold}) format('truetype');
+    src: url('/fonts/Comfortaa/Comfortaa-Bold.ttf') format('truetype');
+    //src: url(${ComfortaaBold}) format('truetype');
     font-weight: 700;
     font-style: normal;
     font-display: swap;
