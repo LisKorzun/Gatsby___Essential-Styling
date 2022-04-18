@@ -275,62 +275,22 @@ The fundamental strategy can also be used with any SSR app.
 > use [gatsby-plugin-web-font-loader](https://www.gatsbyjs.com/docs/how-to/styling/using-web-fonts/#gatsby-plugin-web-font-loader),
 > use [Web Font Loader with Typekit](https://www.gatsbyjs.com/docs/how-to/styling/using-web-fonts/#how-to-use-web-font-loader-with-typekit),
 > self-host [Google Fonts with Fontsource](https://www.gatsbyjs.com/docs/how-to/styling/using-web-fonts/#self-host-google-fonts-with-fontsource).
-> Here I'd like to mention how to add local fonts.
+> Here I'd like to mention how to add local fonts since [having the font file available locally](https://www.gatsbyjs.com/docs/how-to/performance/improving-site-performance/#step-3-optimize-fonts) will save a trip over the network and reduce blocking time.
 
 
 1. **Download any [Google Font family](https://fonts.google.com/specimen/Comfortaa) to your project**
 
-   Let's download Comfortaa font family and store it in `src/assets/fonts/Comfortaa` folder.
+   Let's download _Comfortaa_ font family and store it in `static/fonts/Comfortaa` folder.
 
-2. **Create `fonts.ts` in `styles` folder**
+2. **Create `fonts.ts` in `styles` folder. Example is [here](https://github.com/LisKorzun/Gatsby___Essential-Styling/blob/master/src/styles/fonts.ts)**
 
-   ```ts
-   import { css } from 'styled-components'
-   
-   import ComfortaaRegular from '../assets/fonts/Comfortaa/Comfortaa-Regular.ttf'
-   import ComfortaaBold from '../assets/fonts/Comfortaa/Comfortaa-Bold.ttf'
-   import ComfortaaSemiBold from '../assets/fonts/Comfortaa/Comfortaa-SemiBold.ttf'
-   import ComfortaaLight from '../assets/fonts/Comfortaa/Comfortaa-Light.ttf'
-   import ComfortaaMedium from '../assets/fonts/Comfortaa/Comfortaa-Medium.ttf'
-   
-   const fonts = css`
-     @font-face {
-       font-family: 'Comfortaa';
-       src: url(${ComfortaaRegular}) format('truetype');
-       font-weight: 400;
-     }
-     @font-face {
-       font-family: 'Comfortaa';
-       src: url(${ComfortaaLight}) format('truetype');
-       font-weight: 300;
-     }
-     @font-face {
-       font-family: 'Comfortaa';
-       src: url(${ComfortaaMedium}) format('truetype');
-       font-weight: 500;
-     }
-     @font-face {
-       font-family: 'Comfortaa';
-       src: url(${ComfortaaSemiBold}) format('truetype');
-       font-weight: 600;
-     }
-     @font-face {
-       font-family: 'Comfortaa';
-       src: url(${ComfortaaBold}) format('truetype');
-       font-weight: 700;
-     }
-   `
-   
-   export default fonts
-   ```
+3. **Import and add `fonts` to GlobalStyle**
 
-3. **Create `types.ts` in `src` folder. Add type declaration for the font type**
+4. **Create `types.ts` in `src` folder. Add type declaration for the font type**
 
    ```ts
    declare module '*.ttf'
    ```
-
-4. **Import and add `fonts` to GlobalStyle**
 
 5. **Update font variable to use newly added font**
 
@@ -338,7 +298,7 @@ The fundamental strategy can also be used with any SSR app.
    --font-sans: 'Comfortaa', 'Tahoma', -apple-system, system-ui, sans-serif;
    ```
 
-🔥 If you faced with Web Font flickering on load, you can try to preload the font with helmet plugin.
+🔥 If you faced with Web Font flickering on load, you can [preload only essential fonts](https://github.com/LisKorzun/Gatsby___Essential-Styling/blob/master/src/components/Head.tsx) with Helmet plugin.
 
 
 ---
