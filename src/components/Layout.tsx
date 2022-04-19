@@ -1,6 +1,7 @@
 import React, { FC } from 'react'
 
 import Head from './Head'
+import ColorModeToggle from './ColorModeToggle'
 
 const Layout: FC = ({ children, ...propsUsedByPage }) => {
   console.log(propsUsedByPage)
@@ -13,6 +14,7 @@ const Layout: FC = ({ children, ...propsUsedByPage }) => {
       <header>Site Name</header>
       <main>{children}</main>
       <footer>Footer</footer>
+      <ColorModeToggle />
     </>
   )
 }

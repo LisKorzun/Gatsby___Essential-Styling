@@ -14,7 +14,12 @@ const GlobalStyles = createGlobalStyle`
     font-family: var(--font-sans);
     color: var(--color-text);
     background-color: var(--color-background);
+    margin: 100px auto;
+    width: 500px;
   }  
+  h1 {
+    color: var(--color-primary);
+  }
 `
 
 export default GlobalStyles
