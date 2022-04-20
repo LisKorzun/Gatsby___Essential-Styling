@@ -342,6 +342,15 @@ Let's download _Comfortaa_ font family and store it in `static/fonts/Comfortaa` 
 
 🔥 For both options you can [preload only essential fonts](https://github.com/LisKorzun/Gatsby___Essential-Styling/blob/master/src/components/Head.tsx) with Helmet plugin.
 
+## 🚩 Dark Mode
+
+Based on the article **[The Quest for the Perfect Dark Mode](https://www.joshwcomeau.com/react/dark-mode/)** by Josh Comeau.
+Basic principles:
+
+1. **Use reactive CSS variables**
+2. **Prepare colors for the initial page view beforehand, using [onRenderBody](https://github.com/LisKorzun/Gatsby___Essential-Styling/blob/master/gatsby-ssr.tsx) [Gatsby Server Rendering API](https://www.gatsbyjs.com/docs/reference/config-files/gatsby-ssr/#onRenderBody)**. 
+3. **Creat [context](https://github.com/LisKorzun/Gatsby___Essential-Styling/blob/master/src/store/ColorModeContext.tsx) for color modes, add [provider](https://github.com/LisKorzun/Gatsby___Essential-Styling/blob/master/src/components/wrapRoot.tsx)**
+4. **Add the mode [toggle](https://github.com/LisKorzun/Gatsby___Essential-Styling/blob/master/src/components/ColorModeToggle.tsx)**
 
 ---
 
@@ -352,4 +361,3 @@ Learn more about
 - [Tutorial: Styled Components](https://www.gatsbyjs.com/docs/how-to/styling/styled-components/)
 - [Official Plugin: gatsby-plugin-styled-components](https://www.gatsbyjs.com/plugins/gatsby-plugin-styled-components/)
 - [NPM: gatsby-plugin-styled-components](https://www.npmjs.com/package/gatsby-plugin-styled-components)
--
