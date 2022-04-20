@@ -20,13 +20,13 @@
 
 There are some options for styling in Gatsby: Inline styles, Global CSS, CSS Modules, Styled-Components, Bootstrap, etc.
 At first glance, styling of SSR app should not be so complicated since there are so many options.
-However, there are cases when a simple feature can have a complex implementation, e.x. freaking dark mode.
+However, there are cases when a simple feature can have a complex implementation, e.g. dark mode.
 So the choice of styling approach could become complicated.
 Personally, I would rather like CSS-in-JS approach and Styled-Components.
 But it doesn't mean that using CSS-in-JS absolves you from needing to learn CSS.
 No matter where you put your CSS, it behooves you to develop a mastery of the language.
-There are a lot of the exciting newer developments in CSS. One of them is CSS variables _(aka Custom Properties)_.
-Using them can help resolve a lot of issues.
+There are a lot of the exciting newer developments in CSS. One of them is CSS variables _(aka Custom Properties)_. 
+Their best trick is that they're reactive. When a variable's value changes, the HTML updates instantly. Using them can help resolve a lot of issues.
 
 Let's summarize, in this starter we are focusing on the initial app structure for styling.
 The fundamental strategy can also be used with any SSR app.
@@ -275,30 +275,72 @@ The fundamental strategy can also be used with any SSR app.
 > use [gatsby-plugin-web-font-loader](https://www.gatsbyjs.com/docs/how-to/styling/using-web-fonts/#gatsby-plugin-web-font-loader),
 > use [Web Font Loader with Typekit](https://www.gatsbyjs.com/docs/how-to/styling/using-web-fonts/#how-to-use-web-font-loader-with-typekit),
 > self-host [Google Fonts with Fontsource](https://www.gatsbyjs.com/docs/how-to/styling/using-web-fonts/#self-host-google-fonts-with-fontsource).
-> Here I'd like to mention how to add local fonts since [having the font file available locally](https://www.gatsbyjs.com/docs/how-to/performance/improving-site-performance/#step-3-optimize-fonts) will save a trip over the network and reduce blocking time.
+> Here is an example how to add custom local fonts since [having the font file available locally](https://www.gatsbyjs.com/docs/how-to/performance/improving-site-performance/#step-3-optimize-fonts) will save a trip over the network and reduce blocking time.
 
+### Option 1. Load font as module
 
 1. **Download any [Google Font family](https://fonts.google.com/specimen/Comfortaa) to your project**
 
-   Let's download _Comfortaa_ font family and store it in `static/fonts/Comfortaa` folder.
+   Let's download _Comfortaa_ font family and store it in `src/assets/fonts/Comfortaa` folder.
 
-2. **Create `fonts.ts` in `styles` folder. Example is [here](https://github.com/LisKorzun/Gatsby___Essential-Styling/blob/master/src/styles/fonts.ts)**
+2. **Create `fonts.ts` in `styles` folder. Specify your font with [@font-face CSS at-rule](https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face)
 
-3. **Import and add `fonts` to GlobalStyle**
+   ```ts
+   import { css } from 'styled-components'
+   
+   import ComfortaaRegular from '../assets/fonts/Comfortaa/Comfortaa-Regular.ttf'
+   
+   const fonts = css`
+     @font-face {
+       font-family: 'Comfortaa';
+       src: url(${ComfortaaRegular}) format('truetype');
+       font-weight: 400;
+       font-style: normal; 
+       font-display: swap;
+     }
+   `
+   ```
 
-4. **Create `types.ts` in `src` folder. Add type declaration for the font type**
+3. **Most likely you will need to add type declaration for the font type. Create `types.ts` in `src` folder.**
 
    ```ts
    declare module '*.ttf'
    ```
+4. **Add `fonts` to GlobalStyle**
 
-5. **Update font variable to use newly added font**
+5. **Update [font variable](https://github.com/LisKorzun/Gatsby___Essential-Styling/blob/master/src/styles/variables.ts) to use newly added font**
 
    ```
-   --font-sans: 'Comfortaa', 'Tahoma', -apple-system, system-ui, sans-serif;
+   --font-sans: 'Comfortaa', -apple-system, system-ui, sans-serif;
    ```
 
-🔥 If you faced with Web Font flickering on load, you can [preload only essential fonts](https://github.com/LisKorzun/Gatsby___Essential-Styling/blob/master/src/components/Head.tsx) with Helmet plugin.
+### Option 2. Load font from static folder
+
+1. **Download any [Google Font family](https://fonts.google.com/specimen/Comfortaa) to your project**
+
+   You can create a folder named static at the root of your project. Every file you put into that folder will be copied into the public folder.
+Let's download _Comfortaa_ font family and store it in `static/fonts/Comfortaa` folder.
+
+2. **Create `fonts.ts` in `styles` folder. Specify your font with [@font-face CSS at-rule](https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face)
+
+   ```ts
+   import { css } from 'styled-components'
+   
+   const fonts = css`
+     @font-face {
+       font-family: 'Comfortaa';
+       src: url('/fonts/Comfortaa/Comfortaa-Bold.ttf') format('truetype');
+       font-weight: 700;
+       font-style: normal; 
+       font-display: swap;
+     }
+   `
+   ```
+4. **Add `fonts` to GlobalStyle**
+
+6. **Update font variable to use newly added font** 
+
+🔥 For both options you can [preload only essential fonts](https://github.com/LisKorzun/Gatsby___Essential-Styling/blob/master/src/components/Head.tsx) with Helmet plugin.
 
 
 ---
