@@ -21,7 +21,7 @@
     "lint": "eslint . --ext ts --ext tsx --ext js --ext jsx",
     "lint:fix": "eslint . --ext ts --ext tsx --ext js --ext jsx --fix",
     "lint:quiet": "eslint . --ext ts --ext tsx --ext js --ext jsx --quiet",
-    "check": "npm run typecheck & npm run lint"
+    "check": "npm run typecheck & npm run lint:fix"
   },
   "dependencies": {
     "babel-plugin-styled-components": "^2.0.6",
