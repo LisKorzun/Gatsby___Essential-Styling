@@ -45,5 +45,5 @@ export const getFallBackColorStyles = () => {
     ''
   )
 
-  return `html { ${cssVariableString} }`
+  return `:root  { ${cssVariableString} }`
 }
