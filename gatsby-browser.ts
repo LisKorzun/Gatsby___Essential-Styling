@@ -12,6 +12,7 @@ export const onInitialClientRender = () => {
 
 export const onClientEntry = () => {
   console.log("We've started!")
+  console.log(document);
 }
 
 export const disableCorePrefetching = () => true
