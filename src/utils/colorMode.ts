@@ -35,6 +35,7 @@ export const getInitialColorModeScript = () => {
     .replace("'🌈'", JSON.stringify(COLORS))
     .replace('🔑', COLOR_MODE_KEY)
     .replace('⚡️', INITIAL_COLOR_MODE_CSS_PROP)
+  debugger;
 
   return minify(`(${boundFn})()`)
 }
