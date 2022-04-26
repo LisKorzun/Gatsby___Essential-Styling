@@ -11,8 +11,6 @@ export const wrapPageElement = wrapPage
 export const onRenderBody: GatsbySSR['onRenderBody'] = ({ setPreBodyComponents, setHeadComponents }) => {
   setHeadComponents([<style>{getFallBackColorStyles()}</style>])
   setPreBodyComponents([
-    <script key="block" dangerouslySetInnerHTML={{ __html: `(() => {alert('No UI for you!');})()` }} />,
     <script key="initial_color_mode" dangerouslySetInnerHTML={{ __html: getInitialColorModeScript().code! }} />,
-    <script key="block-d" dangerouslySetInnerHTML={{ __html: `(() => {console.log(document);alert('No UI for you!');})()` }} />,
   ])
 }
