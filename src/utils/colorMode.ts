@@ -6,7 +6,7 @@ const setInitialColorsByUserPreferences = () => {
   const colors = '🌈'
   const colorModeKey = '🔑'
   const colorModeCssProp = '⚡️'
-debugger;
+
   const prefersDarkFromMQ = window.matchMedia('(prefers-color-scheme: dark)').matches
   const persistedPreference = localStorage.getItem(colorModeKey)
 

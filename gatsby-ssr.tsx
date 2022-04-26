@@ -9,8 +9,11 @@ export const wrapRootElement = wrapRoot
 export const wrapPageElement = wrapPage
 
 export const onRenderBody: GatsbySSR['onRenderBody'] = ({ setPreBodyComponents, setHeadComponents }) => {
-  setHeadComponents([<style>{getFallBackColorStyles()}</style>])
-  setPreBodyComponents([
+  setHeadComponents([
     <script key="initial_color_mode" dangerouslySetInnerHTML={{ __html: getInitialColorModeScript().code! }} />,
+    <style>{getFallBackColorStyles()}</style>,
   ])
+  // setPreBodyComponents([
+  //   <script key="initial_color_mode" dangerouslySetInnerHTML={{ __html: getInitialColorModeScript().code! }} />,
+  // ])
 }
