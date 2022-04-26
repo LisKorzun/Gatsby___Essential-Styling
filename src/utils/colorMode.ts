@@ -38,3 +38,12 @@ export const getInitialColorModeScript = () => {
 
   return minify(`(${boundFn})()`)
 }
+
+export const getFallBackColorStyles = () => {
+  const cssVariableString = Object.entries(COLORS).reduce(
+    (acc, [name, colorByTheme]) => `${acc}\n--color-${name}: ${colorByTheme.light};`,
+    ''
+  )
+
+  return `html { ${cssVariableString} }`
+}

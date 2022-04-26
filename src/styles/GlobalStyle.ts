@@ -19,7 +19,6 @@ const GlobalStyles = createGlobalStyle`
   }  
   h1 {
     color: var(--color-primary);
-    font-size: 200px;
   }
 `
 
