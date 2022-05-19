@@ -85,7 +85,7 @@ The fundamental strategy can also be used with any SSR app.
 2. **Create `wrapRoot.tsx` in `src/components` folder. Add ThemeProvider and GlobalStyles**
 
    ```tsx
-   // Copy the snippet below to the newly created wrapRoot.tsx file
+   // src/components/wrapRoot.tsx
 
    import React from 'react'
    import type { GatsbyBrowser } from 'gatsby'
@@ -110,7 +110,7 @@ The fundamental strategy can also be used with any SSR app.
 3. **Create `gatsby-browser.ts` in the root. Use wrapRootElement gatsby api**
 
    ```ts
-   // Copy the snippet below to the newly created gatsby-browser.ts file
+   // gatsby-browser.ts
 
    import wrapRoot from './src/components/wrapRoot'
 
@@ -134,7 +134,7 @@ The fundamental strategy can also be used with any SSR app.
 4. **Create `Layout.tsx` in `src/components` folder**
 
    ```tsx
-   // Copy the snippet below to the newly created Layout.tsx file
+   // src/components/Layout.tsx
 
    import React, { FC } from 'react'
 
@@ -158,7 +158,7 @@ The fundamental strategy can also be used with any SSR app.
 5. **Create `wrapPage.tsx` in `src/components` folder**
 
    ```tsx
-   // Copy the snippet below to the newly created wrapPage.tsx file
+   // src/components/wrapPage.tsx
 
    import React from 'react'
    import type { GatsbyBrowser } from 'gatsby'
@@ -198,7 +198,7 @@ The fundamental strategy can also be used with any SSR app.
 7. **Create `gatsby-ssr.ts` in the root**
 
    ```ts
-   // Copy gatsby-browser.ts to the newly created gatsby-ssr.ts file
+   // gatsby-ssr.ts
 
    import wrapRoot from './src/components/wrapRoot'
    import wrapPage from './src/components/wrapPage'
@@ -284,9 +284,6 @@ The fundamental strategy can also be used with any SSR app.
    
    import './src/styles/global.css'
    ```
-
-
-🔥 At this point, you have essential structure of styles folder.
 
 ## 🚩 Fonts
 
