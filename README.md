@@ -437,10 +437,10 @@ when typically you only need the Latin base set. The Google Webfonts Helper app 
    import './src/styles/fonst.css'
    ```
 
-5. **Update font variable to use newly added font** 
+5. Update font variable to use newly added font
 
-> Keep in mind that none of the files in the static folder will be post-processed or minified.
-> You should take cate about caching of fonts folder forever.
+   > Keep in mind that none of the files in the static folder will be post-processed or minified.
+   > You should take cate about caching of fonts folder forever.
 
 ## 🚩 Dark Mode
 
