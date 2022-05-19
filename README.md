@@ -64,15 +64,11 @@ The fundamental strategy can also be used with any SSR app.
 1. **Create `GlobalStyle.ts` in `src/styles` folder**
 
    ```js
-   // Copy the snippet below to the newly created GlobalStyle.js file
+   // src/styles/GlobalStyles.ts
 
    import { createGlobalStyle } from 'styled-components'
 
-   const GlobalStyles = createGlobalStyle`
-   
-   // Here we are going to add global styles
-   
-   `
+   const GlobalStyles = createGlobalStyle``
 
    export default GlobalStyles
    ```
@@ -121,7 +117,10 @@ The fundamental strategy can also be used with any SSR app.
    export const wrapRootElement = wrapRoot
    ```
 
+
 🔥 At this point, you can run `gatsby develop`, add some styles to `GlobalStyle.ts` and check how they are applied.
+
+> ❗ If your consider a case when Theme or GlobalStyles can depend on a page, then the wrapPageElement api is better choice.
 
 > The **[wrapPageElement](https://www.gatsbyjs.com/docs/reference/config-files/gatsby-browser/#wrapPageElement)**
 > api is ideal for base layouts that every page has. It's not necessary to use this function,
@@ -213,69 +212,97 @@ The fundamental strategy can also be used with any SSR app.
 > Browsers apply styles to elements before you’ve written any CSS at all, and sometimes those styles vary. 
 > Normalizing your CSS lets you rest assured, knowing that you have the same base layer of styles applied across all browsers.
 
-1. **Create `normalize.ts` in `src/styles` folder, copy [normalize](https://raw.githubusercontent.com/necolas/normalize.css/master/normalize.css)**
+### Normalizing your CSS
 
-   ```ts
-   import { css } from 'styled-components'
-   
-   const normalize = css`
-   
-   /* copy normalize.css here */
-   
-   `
-   
-   export default wrapPage
+1. **Install [normalize.css](https://github.com/necolas/normalize.css/)**
+
+   ```shell
+   npm i normalize.css
    ```
 
-2. **Create `variables.ts` in `src/styles` folder**
+2. **Import normalize.css in the `gatsby-browser.ts` file**
 
    ```ts
-   import { css } from 'styled-components'
+   // gatsby-browser.ts
    
-   const variables = css`
-    :root {
-      --font-sans: 'Tahoma', -apple-system, system-ui, sans-serif;
-      
-      --color-text: #1b263b;
-      --color-background: #fff;
-      --color-primary: #06bcf0;
-      --color-secondary: #9cacbf;
+   import 'normalize.css'
+   ```
+   
+> ❗ Gatsby automatically concatenates and minifies CSS and inlines them into the <head> of your HTML files for the fastest possible page load time.
+> CSS files like normalize, css variables, global typography and colors are typically imported into the site’s gatsby-browser.js file.
+
+### CSS Variables
+
+1. **Create `variables.css` in `src/styles` folder**
+
+   ```css
+   /* src/styles/variables.css */
+   
+   :root {
+   --font-sans: 'Tahoma', -apple-system, system-ui, sans-serif;
+   
+   --color-text: #1b263b;
+   --color-background: #fff;
+   --color-primary: #06bcf0;
+   --color-secondary: #9cacbf;
    }
-   `
-   
-   export default variables
-   ```
-
-3. **Add `variables` and `normalize` styles to GlobalStyle**
-
-   ```ts
-   import variables from './variables'
-   import normalize from './normalize'
-   
-   const GlobalStyles = createGlobalStyle`
-     ${normalize};
-     ${variables};
-   
-     /* Put your global styles here or create base.ts file*/
-     body {
-       font-family: var(--font-sans);
-       color: var(--color-text);
-       background-color: var(--color-background);
-     }  
-   `
    ```
   
-4. **Create theme.ts file with empty object and provide this object to ThemeProvider**
+2. **Import `variables.css` in the `gatsby-browser.ts` file:**
+
+   ```ts
+   // gatsby-browser.ts
    
+   import './src/styles/variables.css'
+   ```
+
+### Global CSS
+
+> Styles that are critical for any page it's also better to load as css, especially this is important for SSR apps.
+
+1. **Create `global.css` in `src/styles` folder**
+
+   ```css
+   /* src/styles/global.css */
+
+   body {
+     font-family: var(--font-sans);
+     color: var(--color-text);
+     background-color: var(--color-background);
+     margin: 100px auto;
+     width: 500px;
+   }
+   h1 {
+     color: var(--color-primary);
+   }
+   ```
+
+2. **Import `global.css` in the `gatsby-browser.ts` file:**
+
+   ```ts
+   // gatsby-browser.ts
+   
+   import './src/styles/global.css'
+   ```
+
+
 🔥 At this point, you have essential structure of styles folder.
 
 ## 🚩 Fonts
 
-> There are a lot of ways how to add fonts to your gatsby site: 
-> use [gatsby-plugin-web-font-loader](https://www.gatsbyjs.com/docs/how-to/styling/using-web-fonts/#gatsby-plugin-web-font-loader),
-> use [Web Font Loader with Typekit](https://www.gatsbyjs.com/docs/how-to/styling/using-web-fonts/#how-to-use-web-font-loader-with-typekit),
-> self-host [Google Fonts with Fontsource](https://www.gatsbyjs.com/docs/how-to/styling/using-web-fonts/#self-host-google-fonts-with-fontsource).
-> Here is an example how to add custom local fonts since [having the font file available locally](https://www.gatsbyjs.com/docs/how-to/performance/improving-site-performance/#step-3-optimize-fonts) will save a trip over the network and reduce blocking time.
+> There are a lot of ways how to [add fonts to your gatsby site](https://www.gatsbyjs.com/docs/how-to/styling/using-web-fonts/)
+> But before you start thinking to apply amazing font to your site, just be prepared for [FOUT fighting](https://css-tricks.com/fighting-foit-and-fout-together/).
+> May be, it's not so important feature...
+
+> [Zach Leatherman](https://github.com/zachleat) did a great research on [web font loading performance](https://www.zachleat.com/web/five-whys/).
+> Here is his [web font loading recipes](https://github.com/zachleat/web-font-loading-recipes), and my [favorite one](https://github.com/zachleat/web-font-loading-recipes/blob/master/fout.html). 
+
+### Basic principles:
+
+TBD:
+
+
+>Here is an example how to add custom local fonts since [having the font file available locally](https://www.gatsbyjs.com/docs/how-to/performance/improving-site-performance/#step-3-optimize-fonts) will save a trip over the network and reduce blocking time.
 
 ### Option 1. Load font as module
 
@@ -344,12 +371,13 @@ Let's download _Comfortaa_ font family and store it in `static/fonts/Comfortaa` 
 
 ## 🚩 Dark Mode
 
-Based on the article **[The Quest for the Perfect Dark Mode](https://www.joshwcomeau.com/react/dark-mode/)** by Josh Comeau.
-Basic principles:
+> Based on the article **[The Quest for the Perfect Dark Mode](https://www.joshwcomeau.com/react/dark-mode/)** by Josh Comeau.
+
+### Basic principles:
 
 1. **Use reactive CSS variables**
 2. **Prepare colors for the initial page view beforehand, using [onRenderBody](https://github.com/LisKorzun/Gatsby___Essential-Styling/blob/master/gatsby-ssr.tsx) [Gatsby Server Rendering API](https://www.gatsbyjs.com/docs/reference/config-files/gatsby-ssr/#onRenderBody)**. 
-3. **Creat [context](https://github.com/LisKorzun/Gatsby___Essential-Styling/blob/master/src/store/ColorModeContext.tsx) for color modes, add [provider](https://github.com/LisKorzun/Gatsby___Essential-Styling/blob/master/src/components/wrapRoot.tsx)**
+3. **Create [context](https://github.com/LisKorzun/Gatsby___Essential-Styling/blob/master/src/store/ColorModeContext.tsx) for color modes, add [provider](https://github.com/LisKorzun/Gatsby___Essential-Styling/blob/master/src/components/wrapRoot.tsx)**
 4. **Add the mode [toggle](https://github.com/LisKorzun/Gatsby___Essential-Styling/blob/master/src/components/ColorModeToggle.tsx)**
 
 ---
