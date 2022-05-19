@@ -289,50 +289,122 @@ The fundamental strategy can also be used with any SSR app.
 
 > There are a lot of ways how to [add fonts to your gatsby site](https://www.gatsbyjs.com/docs/how-to/styling/using-web-fonts/)
 > But before you start thinking to apply amazing font to your site, just be prepared for [FOUT fighting](https://css-tricks.com/fighting-foit-and-fout-together/).
-> May be, it's not so important feature...
+> May be, this is not so important feature...
 
 > [Zach Leatherman](https://github.com/zachleat) did a great research on [web font loading performance](https://www.zachleat.com/web/five-whys/).
 > Here is his [web font loading recipes](https://github.com/zachleat/web-font-loading-recipes), and my [favorite one](https://github.com/zachleat/web-font-loading-recipes/blob/master/fout.html). 
 
 ### Basic principles:
 
-TBD:
+Font files can usually be reduced in size significantly. If your font file is over 50kb, it’s too large. In addition, fonts can block page load, so it’s important to think about reducing network calls.
+
+1. **Prefer `woff2`. Don’t use `ttf`**
+
+   `woff2` is a compressed font format, [supported by browsers](https://caniuse.com/woff2) used by over 95% of Internet users. 
+A few legacy browsers need woff.Like using avif and webp instead of png and jpg, using the correct format can significantly cut down the amount of data sent over the network.
 
 
->Here is an example how to add custom local fonts since [having the font file available locally](https://www.gatsbyjs.com/docs/how-to/performance/improving-site-performance/#step-3-optimize-fonts) will save a trip over the network and reduce blocking time.
+2. **Self-host rather than installing from an external CDN.**
 
+   Having the font file available locally will save a trip over the network and reduce blocking time.
+
+
+3. **Use Latin font subsets only**
+
+   If creating a Latin-language site, it’s common to accidentally include font extensions (Greek, Cyrillic, Devnagari, Chinese) 
+when typically you only need the Latin base set. The Google Webfonts Helper app can help you do this with free fonts.
+
+
+4. **[Preload](https://caniuse.com/link-rel-preload), [prefetch](https://caniuse.com/link-rel-dns-prefetch), [preconnect](https://caniuse.com/link-rel-preconnect) ...**
+
+   ```html
+   <!-- CSS -->
+   <link rel='dns-prefetch' href='//fonts.googleapis.com'>
+   <!-- Gives a hint to the browser to perform a DNS lookup in the background to improve performance. -->
+   <link rel="prefetch" href="(url)">
+   <!-- Informs the browsers that a given resource should be prefetched so it can be loaded more quickly. -->
+   
+   <!-- Fonts -->
+   <link rel='preconnect' href='https:// fonts.gstatic.com' crossorigin>
+   <!-- Gives a hint to the browser to begin the connection handshake (DNS, TCP, TLS) -->
+   <!-- in the background to improve performance. -->
+   <!-- Great for cross-origin font requests -->
+   
+   <!-- Fonts -->
+   <link rel='preload' href='/fonts/Comfortaa.woff2' as='font' type='font/woff2' crossorigin>
+   <!-- Using <link rel="preload">, browsers can be informed to prefetch resources without having to execute them, -->
+   <!-- allowing fine-grained control over when and how resources are loaded. -->
+   <!-- Use preload for self-hosted fonts -->
+   <!-- Preloading fonts from a different origin incurs connection costs at a bad time -->
+   <!-- Overuse of preload will cost you in first render time -->
+   <!-- Preload some, not all. Prioritization strategy: -->
+   <!--     ▫️ what reflows are most likely to be the most disruptive -->
+   <!--     ▫️ preload one of each family -->
+   ```
+
+5. **Use `swap`** 
+
+   Gives the font face an extremely small block period and an infinite swap period.
+
+   ```css
+   @font-face { 
+      font-display: swap;
+   }
+   
+   /* Shows fallback font immediately, render web font whenever */
+   ```
+
+6. **Load a web font or two/three web fonts using JS: [FontFase Web APIs](https://developer.mozilla.org/en-US/docs/Web/API/FontFace)**
+
+   ```js
+   // Make two fonts
+   let font = new FontFace('Comfortaa', /* ... */);
+   let fontBold = new FontFace('Comfortaa', /* ... */);
+   
+   // Load two
+   let fonts = await Promise.all([
+      font.load(),
+      fontBold.load()
+   ]);
+   
+   // Render them at the same time
+   fonts.forEach(font => document.fonts.add(font));
+   ```
+
+
+> If you don't care about [FOUT or FOIT](https://dev.to/ibn_abubakre/font-loading-strategies-foit-and-fout-393b#:~:text=FOIT%20and%20FOUT%20are%20font,until%20the%20font%20is%20loaded.)
+> here is two simple options how to load self-hosted fonts.
 ### Option 1. Load font as module
 
-1. **Download any [Google Font family](https://fonts.google.com/specimen/Comfortaa) to your project**
+1. Download any [Google Font family](https://fonts.google.com/specimen/Comfortaa) to `src/assets/fonts` folder.
 
-   Let's download _Comfortaa_ font family and store it in `src/assets/fonts/Comfortaa` folder.
-
-2. **Create `fonts.ts` in `styles` folder. Specify your font with [@font-face CSS at-rule](https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face)
+2. Specify your font with [@font-face CSS at-rule](https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face)
 
    ```ts
-   import { css } from 'styled-components'
+   import { createGlobalStyle } from 'styled-components'
    
    import ComfortaaRegular from '../assets/fonts/Comfortaa/Comfortaa-Regular.ttf'
    
-   const fonts = css`
-     @font-face {
-       font-family: 'Comfortaa';
-       src: url(${ComfortaaRegular}) format('truetype');
-       font-weight: 400;
-       font-style: normal; 
-       font-display: swap;
-     }
+   const GlobalStyles = createGlobalStyle`
+   @font-face {
+      font-family: 'Comfortaa';
+      src: url(${ComfortaaRegular}) format('truetype');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+   }
    `
+   
+   export default GlobalStyles
    ```
 
-3. **Most likely you will need to add type declaration for the font type. Create `types.ts` in `src` folder.**
+3. Most likely you will need to add type declaration for the font type. Create `types.ts` in `src` folder.
 
    ```ts
    declare module '*.ttf'
    ```
-4. **Add `fonts` to GlobalStyle**
 
-5. **Update [font variable](https://github.com/LisKorzun/Gatsby___Essential-Styling/blob/master/src/styles/variables.ts) to use newly added font**
+5. Update [font variable](https://github.com/LisKorzun/Gatsby___Essential-Styling/blob/master/src/styles/variables.ts) to use newly added font
 
    ```
    --font-sans: 'Comfortaa', -apple-system, system-ui, sans-serif;
@@ -340,31 +412,35 @@ TBD:
 
 ### Option 2. Load font from static folder
 
-1. **Download any [Google Font family](https://fonts.google.com/specimen/Comfortaa) to your project**
-
+1. Download any [Google Font family](https://fonts.google.com/specimen/Comfortaa) to `static/fonts` folder.
    You can create a folder named static at the root of your project. Every file you put into that folder will be copied into the public folder.
-Let's download _Comfortaa_ font family and store it in `static/fonts/Comfortaa` folder.
+   
 
-2. **Create `fonts.ts` in `styles` folder. Specify your font with [@font-face CSS at-rule](https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face)
+3. Create `fonts.css` in `src/styles` folder. Specify your font with [@font-face CSS at-rule](https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face)
+
+   ```css
+   /* src/styles/fonts.css */
+   
+   @font-face {
+     font-family: 'Comfortaa';
+     src: url('/fonts/Comfortaa/Comfortaa-Bold.ttf') format('truetype');
+     font-weight: 700;
+     font-style: normal; 
+     font-display: swap;
+   }
+   ```
+4. Import `fonts.css` in the `gatsby-browser.ts` file:
 
    ```ts
-   import { css } from 'styled-components'
+   // gatsby-browser.ts
    
-   const fonts = css`
-     @font-face {
-       font-family: 'Comfortaa';
-       src: url('/fonts/Comfortaa/Comfortaa-Bold.ttf') format('truetype');
-       font-weight: 700;
-       font-style: normal; 
-       font-display: swap;
-     }
-   `
+   import './src/styles/fonst.css'
    ```
-4. **Add `fonts` to GlobalStyle**
 
-6. **Update font variable to use newly added font** 
+5. **Update font variable to use newly added font** 
 
-🔥 For both options you can [preload only essential fonts](https://github.com/LisKorzun/Gatsby___Essential-Styling/blob/master/src/components/Head.tsx) with Helmet plugin.
+> Keep in mind that none of the files in the static folder will be post-processed or minified.
+> You should take cate about caching of fonts folder forever.
 
 ## 🚩 Dark Mode
 
@@ -386,3 +462,4 @@ Learn more about
 - [Tutorial: Styled Components](https://www.gatsbyjs.com/docs/how-to/styling/styled-components/)
 - [Official Plugin: gatsby-plugin-styled-components](https://www.gatsbyjs.com/plugins/gatsby-plugin-styled-components/)
 - [NPM: gatsby-plugin-styled-components](https://www.npmjs.com/package/gatsby-plugin-styled-components)
+- [Improving Site Performance](https://www.gatsbyjs.com/docs/how-to/performance/improving-site-performance)
