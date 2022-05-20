@@ -20,7 +20,7 @@
 
 There are some options for styling in Gatsby: Inline styles, Global CSS, CSS Modules, Styled-Components, Bootstrap, etc.
 At first glance, styling of SSR app should not be so complicated since there are so many options.
-However, there are cases when a simple feature can have a complex implementation, e.g. dark mode.
+However, there are cases when a simple feature can have a complex implementation, e.g. dark mode or web font.
 So the choice of styling approach could become complicated.
 Personally, I would rather like CSS-in-JS approach and Styled-Components.
 But it doesn't mean that using CSS-in-JS absolves you from needing to learn CSS.
@@ -440,7 +440,7 @@ when typically you only need the Latin base set. The Google Webfonts Helper app 
 5. Update font variable to use newly added font
 
    > Keep in mind that none of the files in the static folder will be post-processed or minified.
-   > You should take cate about caching of fonts folder forever.
+   > You should take care about caching of fonts folder forever.
 
 ## 🚩 Dark Mode
 
